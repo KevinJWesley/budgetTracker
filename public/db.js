@@ -11,9 +11,15 @@ request.onupgradeneeded = (event) => {
   });
   //   createIndex
   BudgetStore.createIndex("budgetIndex", "deposits");
-  BudgetStore.createIndex("budgetIndex", "expenses");
+  //   BudgetStore.createIndex("budgetIndex", "expenses");
 };
 
-function checkDatabase() {}
+request.onsuccess = function (event) {
+  const transaction = db.transaction(["budgetTrackerDB"], "readwrite");
+  const budgetStore = transaction.objectStore("budgetTrackerDB");
+  budgetStore.add(event);
+};
 
-window.addEventListener("online", checkDatabase);
+// function checkDatabase() {}
+
+// window.addEventListener("online", checkDatabase);
