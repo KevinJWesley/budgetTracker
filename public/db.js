@@ -1,17 +1,17 @@
 let db;
 
 // open "budgetTracker" in indexedDB
-const request = indexedDB.open("budgetTrackerDB", 1);
+const request = indexedDB.open("budgetDB", 1);
 
 // create ObjectStore
 request.onupgradeneeded = (event) => {
   // store reference to indexedDB "budgetTrackerDB"
-  db = event.target.result;
-  let BudgetStore = db.createObjectStore("budgetTrackerDB", {
+  const db = event.target.result;
+  const BudgetStore = db.createObjectStore("budgetDB", {
     autoincrement: true,
   });
   //   createIndex
-  BudgetStore.createIndex("budgetIndex", "deposits");
+  BudgetStore.createIndex("budgetIndex", "budget");
   //   BudgetStore.createIndex("budgetIndex", "expenses");
 };
 
@@ -31,26 +31,26 @@ request.onerror = function (event) {
 
 function saveRecord(record) {
   // create a transaction on the pending db with readwrite access
-  const transaction = db.transaction(["budgetTrackerDB"], "readwrite");
+  const transaction = db.transaction(["budgetDB"], "readwrite");
   // access your pending object store
-  const budgetStore = transaction.objectStore("budgetTrackerDB");
+  const budgetStore = transaction.objectStore("budgetDB");
 
   // add record to your store with add method.
   budgetStore.add(record);
 }
 
 function checkDatabase() {
-  // open a transaction on your pending db
-  const transaction = db.transaction(["budgetTrackerDB"], "readwrite");
+  // open a transaction on pending db
+  const transaction = db.transaction(["budgetDB"], "readwrite");
   // access your pending object store
-  const budgetStore = transaction.objectStore("budgetTrackerDB");
+  const budgetStore = transaction.objectStore("budgetDB");
 
   // get all records from store and set to a variable
   const allRecords = budgetStore.getAll();
 
   allRecords.onsuccess = function () {
     if (allRecords.result.length > 0) {
-      fetch("/api/transaction/bulk", {
+      fetch("./api/transaction/bulk", {
         method: "POST",
         body: JSON.stringify(allRecords.result),
         headers: {
